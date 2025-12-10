@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./pyvideotrans:/app/pyvideotrans
+      - uploads_data:/app/uploads
+      - outputs_data:/app/outputs
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./dichvideo.db
+      - REDIS_URL=redis://redis:6379/0
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - PYVIDEOTRANS_API_URL=http://pyvideotrans:9011
+    depends_on:
+      - redis
+      - pyvideotrans
+    restart: unless-stopped
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # PyVideoTrans API Server
+  pyvideotrans:
+    build:
+      context: ./pyvideotrans
+      dockerfile: ../Dockerfile.pyvideotrans
+    ports:
+      - "9011:9011"
+    volumes:
+      - ./pyvideotrans:/app
+      - pyvideotrans_models:/app/models
+      - pyvideotrans_data:/app/apidata
+    environment:
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+    restart: unless-stopped
+
+  # Redis for task queue
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  uploads_data:
+  outputs_data:
+  pyvideotrans_models:
+  pyvideotrans_data:
+  redis_data:
+

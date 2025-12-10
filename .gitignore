@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+.eggs/
+*.egg-info/
+*.egg
+
+# Environment
+.env
+.env.local
+.env.*.local
+venv/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Build
+.next/
+out/
+build/
+dist/
+*.log
+
+# Database
+*.db
+*.sqlite3
+
+# Uploads & Outputs
+uploads/
+outputs/
+apidata/
+
+# Models (large files)
+models/
+*.onnx
+*.pt
+*.bin
+
+# Temp files
+*.tmp
+*.temp
+.cache/
+
